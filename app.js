@@ -15,11 +15,13 @@ const htmlPath = join(__dirname, "src/views/index.html")
 
 const publicPath = join(__dirname, "src/public")
 
-app.use(calculatorRoute)
+
 
 app.use(express.json())
 
 app.use(express.static(publicPath))
+
+app.use(express.urlencoded({ extended: true }));
 
 //RUTAS
 calculatorRoute.get("/arrayCalculator", (req, res) => {
@@ -28,6 +30,7 @@ calculatorRoute.get("/arrayCalculator", (req, res) => {
 
 calculatorRoute.post("/arrayCalculation", ctrlSum)
 
+app.use(calculatorRoute)
 
 app.listen(5000, () => {
     console.log("Servidor corridendo en localhost:" + 5000)

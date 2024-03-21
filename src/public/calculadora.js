@@ -1,7 +1,9 @@
 let numFilaInput = document.getElementById("fila");
 let numColInput = document.getElementById("columna");
+
 const agregarBtn = document.getElementById("crearMatricesBtn");
 const calcularBtn = document.getElementById("calcular");
+
 const sectionResult = document.getElementById("sectionResult");
 const divResult = document.getElementById("divResult");
 const matriz1 = document.getElementById("matriz1Content");
@@ -10,23 +12,23 @@ const matriz2 = document.getElementById("matriz2Content");
 
 // ! FUNCIONES
 function crearMatrices() {
-  matriz1.innerHTML = "";
-  matriz2.innerHTML = "";
   let numFila = parseInt(numFilaInput.value);
   let numCol = parseInt(numColInput.value);
 
   console.log(numFila, numCol);
 
   if (numFila > 0 && numCol > 0) {
+    matriz1.innerHTML = "";
+    matriz2.innerHTML = "";
     // * Creamos los inputs para la matriz 1
     for (let i = 0; i < numFila; i++) {
       let nuevaFila = document.createElement("div")
-      nuevaFila.className = "flex justify-center items-center";
+      nuevaFila.className = "flex justify-center items-center gap-2 my-2 mx-auto";
 
       for (let j = 0; j < numCol; j++) {
         let input = document.createElement("input");
         input.type = "number";
-        input.className = "border-2 rounded-md border-slate-400 inputMatriz1";
+        input.className = "border-2 rounded-md border-slate-400 w-20 inputMatriz1";
         input.required = true;
         nuevaFila.appendChild(input);
       }
@@ -36,12 +38,12 @@ function crearMatrices() {
     // * Creamos los inputs para la matriz 2
     for (let i = 0; i < numFila; i++) {
       let nuevaFila = document.createElement("div")
-      nuevaFila.className = "flex justify-center items-center";
+      nuevaFila.className = "flex justify-center items-center gap-2 my-2 mx-auto";
 
       for (let j = 0; j < numCol; j++) {
         let input = document.createElement("input");
         input.type = "number";
-        input.className = "border-2 rounded-md border-slate-400 inputMatriz2";
+        input.className = "border-2 rounded-md border-slate-400 w-20 inputMatriz2";
         input.required = true;
         nuevaFila.appendChild(input);
       }
@@ -52,7 +54,8 @@ function crearMatrices() {
   }
 }
 
-async function capturarValores(params) {
+//* Funcion para capturar valores y enviarlos al servidor
+async function capturarValores() {
 
   let primerMatriz = [];
   let segundaMatriz = [];
@@ -69,6 +72,8 @@ async function capturarValores(params) {
     segundaMatriz.push(parseInt(input.value));
   });
 
+
+  //*enviar al servidor
   const res = await fetch('/arrayCalculation', {
     method: 'POST',
     headers: {
@@ -77,12 +82,38 @@ async function capturarValores(params) {
     body: JSON.stringify({ array1: primerMatriz, array2: segundaMatriz })
   });
 
+  const data = await res.json();
 
+  let numFila = parseInt(numFilaInput.value);
+  let numCol = parseInt(numColInput.value);
+
+  //*dibujar el resultado
+  divResult.innerHTML = "";
+  for (let i = 0; i < numFila; i++) {
+    let nuevaFila = document.createElement("div")
+    nuevaFila.className = "flex justify-center items-center gap-2 my-2 mx-auto";
+
+    for (let j = 0; j < numCol; j++) {
+      let input = document.createElement("input");
+      input.type = "number";
+      input.readOnly = true;
+      input.className = "border-2 rounded-md border-slate-400 w-20 resultInput";
+      nuevaFila.appendChild(input);
+    }
+    divResult.appendChild(nuevaFila);
+  }
+
+  const resultInput = document.querySelectorAll('.resultInput');
+  resultInput.forEach((input, index) => {
+    input.value = data[index];
+  });
 }
-
-
 
 // ! EVENTOS
 agregarBtn.addEventListener("click", () => {
   crearMatrices();
+});
+
+calcularBtn.addEventListener("click", () => {
+  capturarValores();
 });
